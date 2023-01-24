@@ -19,7 +19,9 @@ global engine
 
 # source: https://blog.devgenius.io/simple-interactive-chess-gui-in-python-c6d6569f7b6c
 
-def play(events)
+def play(events):
+
+    global WHITE, GREY, YELLOW, BLUE, BLACK, board, background, index_moves, moves
 
     for event in events:
         
@@ -79,6 +81,8 @@ def update():
     updates the screen basis the board class
     '''
 
+    global scrn, WHITE, pieces, board
+
     for i in range(64):
         piece = board.piece_at(i)
         if piece == None:
@@ -95,7 +99,7 @@ def update():
 
 def init():
     
-    global scrn, status, WHITE, GREY, YELLOW, BLUE, BLACK, pieces, board, agent, agent_color, index_moves
+    global scrn, status, WHITE, GREY, YELLOW, BLUE, BLACK, pieces, board, agent, agent_color, index_moves, background, depth
     
     # initialise display
     X = 800
@@ -139,17 +143,21 @@ def init():
     board = chess.Board()
     agent = engine.engine
     agent_color = 0
+    depth = 4
     
     #used later
     index_moves = []
 
+    update()
+
 async def main():
+
+    global scrn, status, WHITE, GREY, YELLOW, BLUE, BLACK, pieces, board, agent, agent_color, index_moves, background, depth
     
     init()
     
     while (status):
         #update screen
-        update()
 
         if board.turn==agent_color:
             board.push(agent(board,depth))
@@ -158,9 +166,15 @@ async def main():
         else:
             play(pygame.event.get())
 
+        update()
+
         if board.outcome() != None:
             status = False
 
         await asyncio.sleep(0)
 
     pygame.quit()
+    sys.exit()
+
+if __name__ == "__main__":
+    asyncio.run(main())
