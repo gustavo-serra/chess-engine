@@ -274,20 +274,20 @@ def chess_GUI(mode, agent = engine.engine, depth = 4, agent_color = 0):
 
         pygame.quit()
         
-# mode_num = int(input("What is the game mode?\n1- player vs. engine\n2- engine vs. engine\n3- player vs. player\n"))
+ mode_num = int(input("What is the game mode?\n1- player vs. engine\n2- engine vs. engine\n3- player vs. player\n"))
 
-# if mode_num == 1:
-#     mode = "player vs engine"
-#     color = int(input("Will you play with black or white? (0 = white, 1 = black)  "))
-#     depth = int(input("What is the engine's search depth? (recommended: 4)  "))
-#     chess_GUI(mode, engine.engine, depth, color)
-    
-# if mode_num == 2:
-#     mode = "engine vs engine"
-#     depth = int(input("What is the engine's search depth? (recommended: 4)  "))
-#     chess_GUI(mode, engine.engine, depth)
-    
-# if mode_num == 3:
-#     mode = "player vs player"
-#     chess_GUI(mode)
+ if mode_num == 1:
+     mode = "player vs engine"
+     color = int(input("Will you play with black or white? (0 = white, 1 = black)  "))
+     depth = int(input("What is the engine's search depth? (recommended: 4)  "))
+     chess_GUI(mode, engine.engine, depth, color)
+   
+ if mode_num == 2:
+     mode = "engine vs engine"
+     depth = int(input("What is the engine's search depth? (recommended: 4)  "))
+     chess_GUI(mode, engine.engine, depth)
+   
+ if mode_num == 3:
+     mode = "player vs player"
+     chess_GUI(mode)
     
