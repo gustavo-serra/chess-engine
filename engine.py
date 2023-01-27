@@ -2,6 +2,7 @@
 # Gustavo Figueiredo Serra NUSP 9794013
 
 import chess
+import chess.polyglot
 import pygame
 import math
 import time
