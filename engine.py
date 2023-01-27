@@ -162,8 +162,8 @@ def pawn_eval(board):
         if isolated: isolated_pawns += [pawn]
         if backwards: backwards_pawns += [pawn]
 
-    pawn_eval = 50*len(passed_pawns) - 25*len(doubled_pawns) - 25*len(backwards_pawns) - 25*len(isolated_pawns)
-
+    pawn_eval = 50*len(passed_pawns) - 25*len(doubled_pawns) - 5*len(backwards_pawns) - 25*len(isolated_pawns)
+    
     return pawn_eval, doubled_pawns, passed_pawns, isolated_pawns, backwards_pawns#, semi_open_files_white, semi_open_files_black, open_files 
 
 
@@ -208,6 +208,30 @@ def evaluate(board):
 #        best_eval = max(best_eval, evaluation)
 #        board.pop()
 
+def order_moves(board):
+    
+    dict_move_scores = dict()
+    
+    for move in board.legal_moves:
+        
+        move_score = 0
+        capturing_piece = board.piece_at(move.from_square)
+        captured_piece = board.piece_at(move.from_square)
+        last_moved_piece = board.piece_at(board.peek().to_square)
+
+        if captured_piece != None:
+            move_score += piece_values[captured_piece.symbol()] - piece_values[capturing_piece.symbol()]
+            
+        if board.gives_check(move):
+            move_score += piece_values[capturing_piece.symbol()]
+            
+        if move.promotion != None:
+            move_score += piece_values[chess.Piece(move.promotion,board.turn).symbol()]
+            
+        dict_move_scores[move] = move_score
+    
+    return dict(sorted(dict_move_scores.items(), key=lambda item: item[1])).keys()
+
 def search_alphabeta_pruning(board, depth, ply_from_root=0, alpha=-math.inf, beta=math.inf):
     
     global best_move
@@ -226,29 +250,39 @@ def search_alphabeta_pruning(board, depth, ply_from_root=0, alpha=-math.inf, bet
     
     if board.is_stalemate():
         return 0
-    
-    legal_moves = list(board.legal_moves)
-    
-    for move in legal_moves: #include move order
+
+    #for move in board.legal_moves:
+    for move in order_moves(board):
         board.push(move)
         evaluation = -search_alphabeta_pruning(board, depth - 1, ply_from_root + 1, -beta, -alpha)
         board.pop()
         if evaluation >= beta:
             return beta
         if evaluation > alpha:
+            #principal_variation = list(board.move_stack)[-ply_from_root:]
             if ply_from_root == 0:
                 best_move = move
+                print(ply_from_root, move, evaluation,principal_variation)
+            
             alpha = evaluation
     
     return alpha
 
 
-def engine(board, depth):
+def engine(board):
     
     global best_move
     
-    best_move = chess.Move.null()
-    
-    evaluation = search_alphabeta_pruning(board, depth)
-    
-    return best_move
+    with chess.polyglot.open_reader("openings/baron30.bin") as reader:
+        try: 
+            return reader.choice(board).move
+        except:
+            best_move = chess.Move.null()
+
+            depth = 4
+
+            evaluation = search_alphabeta_pruning(board, depth)
+
+            print(best_move)
+
+            return best_move
