@@ -269,7 +269,7 @@ def search_alphabeta_pruning(board, depth, ply_from_root=0, alpha=-math.inf, bet
     return alpha
 
 
-def engine(board):
+def engine(board, depth):
     
     global best_move
     
@@ -278,8 +278,6 @@ def engine(board):
             return reader.choice(board).move
         except:
             best_move = chess.Move.null()
-
-            depth = 4
 
             evaluation = search_alphabeta_pruning(board, depth)
 
