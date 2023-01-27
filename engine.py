@@ -210,6 +210,21 @@ def evaluate(board):
 #        board.pop()
 
 def order_moves(board):
+
+    piece_values = {
+        "K": 20000,
+        "Q": 900,
+        "R": 500,
+        "B": 300,
+        "N": 300,
+        "P": 100,
+        "k": -20000,
+        "q": -900,
+        "r": -500,
+        "b": -300,
+        "n": -300,
+        "p": -100
+    }
     
     dict_move_scores = dict()
     
