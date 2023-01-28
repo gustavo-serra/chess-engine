@@ -290,6 +290,9 @@ def engine(board, depth):
     global best_move
     
     with chess.polyglot.open_reader("openings/baron30.bin") as reader:
+
+        print(reader.choice(board).move
+
         try: 
             return reader.choice(board).move
         except:
