@@ -291,7 +291,7 @@ def engine(board, depth):
     
     with chess.polyglot.open_reader("openings/baron30.bin") as reader:
 
-        print(reader.choice(board).move
+        print(reader.choice(board).move)
 
         try: 
             return reader.choice(board).move
