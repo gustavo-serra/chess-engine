@@ -278,7 +278,7 @@ def search_alphabeta_pruning(board, depth, ply_from_root=0, alpha=-math.inf, bet
             #principal_variation = list(board.move_stack)[-ply_from_root:]
             if ply_from_root == 0:
                 best_move = move
-                print(ply_from_root, move, evaluation,principal_variation)
+                #print(ply_from_root, move, evaluation,principal_variation)
             
             alpha = evaluation
     
