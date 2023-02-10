@@ -294,6 +294,10 @@ def engine(board, depth):
         print(board)
         
         print(reader)
+        
+        print(reader.get(board))
+        
+        print(reader.find_all(chess.Board()))
 
         print(reader.choice(board).move)
 
