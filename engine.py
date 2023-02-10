@@ -289,7 +289,7 @@ def engine(board, depth):
     
     global best_move
     
-    with chess.polyglot.open_reader("/data/data/chess-engine/assets/openings/baron30.bin") as reader:
+    with chess.polyglot.open_reader("/data/data/chess-engine/assets/openings/Human.bin") as reader:
         
         print(board)
         
