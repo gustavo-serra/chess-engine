@@ -291,16 +291,16 @@ def engine(board, depth):
     
     with chess.polyglot.open_reader("/data/data/chess-engine/assets/openings/Human.bin") as reader:
         
-        print(board)
-        
-        print(reader)
-        
-        print(reader.get(board))
-        
-        for move in reader.find_all(chess.Board()):
-            print(move)
-
-        print(reader.choice(board).move)
+#        print(board)
+#        
+#        print(reader)
+#        
+#        print(reader.get(board))
+#        
+#        for move in reader.find_all(chess.Board()):
+#            print(move)
+#
+#        print(reader.choice(board).move)
 
         try: 
             return reader.choice(board).move
