@@ -252,7 +252,7 @@ def mobility_eval(board):
 
 def evaluate(board):
         
-    return material_eval(board) + piece_eval(board) + mobility_eval(board)# + pawn_eval(board)
+    return material_eval(board) + get_piece_square_value(board) + mobility_eval(board)# + pawn_eval(board)
 
 def order_moves(board):
 
