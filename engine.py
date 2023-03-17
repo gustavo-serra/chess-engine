@@ -20,16 +20,16 @@ def material_eval(board):
     
     piece_values = {
         "K": 20000,
-        "Q": 900,
-        "R": 500,
-        "B": 300,
-        "N": 300,
+        "Q": 950,
+        "R": 563,
+        "B": 333,
+        "N": 305,
         "P": 100,
         "k": -20000,
-        "q": -900,
-        "r": -500,
-        "b": -300,
-        "n": -300,
+        "q": -950,
+        "r": -563,
+        "b": -333,
+        "n": -305,
         "p": -100
     }
 
@@ -38,79 +38,148 @@ def material_eval(board):
     
     return position_eval
 
-#def pawn_eval_files(board):
-#                
-#        white_pawns = board.pieces(1,1)
-#        black_pawns = board.pieces(1,0)
-#        
-#        pawn_files_white = [p%8 for p in white_pawns]
-#        pawn_files_black = [p%8 for p in black_pawns]
-#        
-#        # white doubled pawns
-#        pawn_eval += -0.5*(len(pawn_files_white)-len(set(pawn_files_white)))
-#
-#        # black doubled pawns
-#        pawn_eval += 0.5*(len(pawn_files_white)-len(set(pawn_files_white)))
-#
-#        # white isolated pawns
-#        files_set = set(sorted(pawn_files_white))
-#        spaces = sorted(set([-1,0,1,2,3,4,5,6,7,8]) - files_set)
-#        diffs = [t - s for s, t in zip(spaces, spaces[1:])]
-#        pawn_eval += sum([-0.25 for d in diffs if d == 2])
-#
-#        # black isolated pawns
-#        files_set = set(sorted(pawn_files_black))
-#        spaces = sorted(set([-1,0,1,2,3,4,5,6,7,8]) - files_set)
-#        diffs = [t - s for s, t in zip(spaces, spaces[1:])]
-#        pawn_eval += sum([0.25 for d in diffs if d == 2])
-#
-#        # passed pawns
-#        passed_pawns = 0
-#        isolated_pawns = 0
-#        backwards_pawns = 0
-#        doubled_pawns = 0
-#        semiopen_files = []
-#        for pawn in white_pawns:           
-#            file = pawn%8
-#            rank = pawn//8
-#            doubled = False
-#            passer = True
-#            isolated = True
-#            backwards = True
-#            semi_open = True
-#            for f in [file-1, file, file+1]:
-#                if f >=0 && f < 8:
-#                    for r in range(1,7):
-#                        
-#                        # doubled, isolated and backwards pawns
-#                        if r*8 + f in white_pawns:
-#                            if f = file:
-#                                doubled = True
-#                            else:
-#                                isolated = False
-#                                if r <= rank:
-#                                    backwards = False # include better backwards rule? + blocked pawns
-#                            
-#                        # passed pawns
-#                        if (r > rank) && (r*8 + f in black_pawns):
-#                            passer = False
-#                        
-#                        # semi open file
-#                        if (f = file) && (r*8 + f in black_pawns):
-#                            semi_open = False
-#                            
-#            if semi_open: semi_open_files += [file]
-#            passed_pawns += passer
-#            isolated_pawns += isolated
-#
-#        # backwards pawn ?
-#    
-#    return position_eval
+def get_piece_square_value(board):
+    """
+    This function returns the positional value of each piece on the board.
+    """
+    piece_square_value_opening = {
+        chess.PAWN: [0, 0, 0, 0, 0, 0, 0, 0,
+                     20, 25, 35, 50, 50, 35, 25, 20,
+                     6, 12, 25, 40, 40, 25, 12, 6,
+                     0, 3, 17, 27, 27, 10, 3, 0,
+                     -3, -5, 10, 20, 20, 0, 0, -10,
+                     -10, -5, 5, 15, 15, 0, 10, -5,
+                     -10, -5, 5, 10, 10, 10, 15, -5,
+                     0, 0, 0, 0, 0, 0, 0, 0],   
 
+        chess.KNIGHT: [-50, -40, -30, -30, -30, -30, -40, -50,
+                        -40, -20, 0, 0, 0, 0, -20, -40,
+                        -30, 0, 10, 15, 15, 20, 0, -30,
+                        -30, 5, 15, 20, 20, 15, 5, -30,
+                        -30, 0, 15, 20, 20, 15, 0, -30,
+                        -30, 5, 10, 15, 15, 10, 5, -30,
+                        -40, -20, 0, 5, 5, 0, -20, -40,
+                        -50, -40, -30, -30, -30, -30, -40, -50],
 
-#def king_safety_eval(board):
+        chess.BISHOP: [-20, -10, -10, -10, -10, -10, -10, -20,
+                        -10, 0, 0, 0, 0, 0, 0, -10,
+                        -10, 0, 5, 10, 10, 5, 0, -10,
+                        -10, 5, 5, 10, 10, 5, 5, -10,
+                        -10, 0, 10, 10, 10, 0, 0, -10,
+                        -10, 10, 5, 5, 5, 5, 10, -10,
+                        -10, 20, 5, 10, 10, 5, 20, -10,
+                        -20, -10, -10, -10, -10, -10, -10, -20],
 
-#def center_control_eval(board):
+    chess.ROOK: [20, 20, 30, 40, 40, 30, 20, 20,
+                 20, 30, 40, 50, 50, 40, 30, 20,
+                 10, 20, 30, 40, 40, 30, 20, 10,
+                 -5, 10, 20, 30, 30, 20, 10, -5,
+                 -5, 0, 0, 0, 0, 0, 0, -5,
+                 -5, 0, 0, 0, 0, 0, 0, -5,
+                 -15, 0, 0, 0, 0, 0, 0, -15,
+                 -30, -20, 5, 20, 20, 10, -20, -30],
+
+    chess.QUEEN: [-20, 0, 10, 15, 40, 40, 40, 40,
+                    -10, 0, 0, 0, 0, 30, 30, 30,
+                    -10, 0, 5, 5, 5, 30, 30, 30,
+                    -5, 0, 5, 5, 5, 15, 0, -5,
+                    0, 0, 5, 5, 5, 5, 0, -5,
+                    -10, 5, 5, 5, 5, 5, 0, -10,
+                    -10, 0, 15, 0, 10, 0, 0, -10,
+                    -20, -10, -10, 10, -5, -10, -10, -20],
+
+    chess.KING: [-30, -40, -40, -50, -50, -40, -40, -30,
+                    -30, -40, -40, -50, -50, -40, -40, -30,
+                    -30, -40, -40, -50, -50, -40, -40, -30,
+                    -30, -40, -40, -50, -50, -40, -40, -30,
+                    -20, -30, -30, -40, -40, -30, -30, -20,
+                    -10, -20, -20, -20, -20, -20, -20, -10,
+                    5, 10, -5, -50, -50, -20, 20, 20,
+                    -10, 30, 10, -50, -10, -30, 30, 20]}
+    
+    piece_square_value_endgame = {
+        chess.PAWN: [0, 0, 0, 0, 0, 0, 0, 0,
+                     55, 35, 25, 15, 15, 25, 35, 55,
+                     45, 29, 16, 5, 5, 16, 29, 45,
+                     33, 17, 7, 0, 0, 7, 17, 33,
+                     25, 10, 0, -5, -5, 0, 10, 25,
+                     20, 5, -5, -10, -10, -5, 5, 20,
+                     20, 5, -5, -10, -10, -5, 5, 20,
+                     0, 0, 0, 0, 0, 0, 0, 0],
+
+        chess.KNIGHT: [-50, -40, -30, -30, -30, -30, -40, -50,
+                        -40, -20, 0, 0, 0, 0, -20, -40,
+                        -30, 0, 10, 15, 15, 10, 0, -30,
+                        -30, 5, 15, 20, 20, 15, 5, -30,
+                        -30, 0, 15, 20, 20, 15, 0, -30,
+                        -30, 5, 10, 15, 15, 10, 5, -30,
+                        -40, -20, 0, 5, 5, 0, -20, -40,
+                        -50, -40, -30, -30, -30, -30, -40, -50],
+
+        chess.BISHOP: [-20, -10, -10, -10, -10, -10, -10, -20,
+                        -10, 0, 0, 0, 0, 0, 0, -10,
+                        -10, 0, 5, 10, 10, 5, 0, -10,
+                        -10, 5, 10, 15, 15, 10, 5, -10,
+                        -10, 0, 10, 15, 15, 10, 0, -10,
+                        -10, 10, 5, 15, 15, 5, 10, -10,
+                        -10, 0, 5, 10, 10, 5, 0, -10,
+                        -20, -10, -10, -10, -10, -10, -10, -20],
+
+    chess.ROOK: [15, 10, 10, 10, 10, 10, 10, 0,
+                 15, 15, 15, 15, 10, 10, 10, 5,
+                 10, 10, 10, 5, 5, 5, 5, 5,
+                 5, 5, 10, 5, 0, 0, 5, 5,
+                 5, 5, 5, 5, 0, 0, 0, 5,
+                 -5, 0, 0, 0, 0, 0, 0, -5,
+                 -5, 0, 0, 0, 0, 0, 0, -5,
+                 0, 0, 0, 5, 5, 0, 0, 0],
+
+    chess.QUEEN: [-10, 20, 20, 30, 30, 20, 10, 20,
+                  -20, 20, 30, 40, 50, 30, 30, 0,
+                  -20, 0, 5, 40, 40, 40, 0, 10,
+                  5, 20, 25, 40, 40, 40, 50, 30,
+                  0, 30, 25, 50,30, 30, 40, 20,
+                  -10, 5, 15, 5, 5, 15, 10, 0,
+                  -10, 0, 5, 0, 0, 0, 0, -10,
+                  -20, -10, -10, -5, -5, -10, -10, -20],
+
+    chess.KING: [-50, -40, -20, -20, -10, 10, 5, -20,
+                 -10, 20, 15, 15, 15, 40, 20, 10,
+                 10, 15, 25, 15, 20, 40, 40, 10,
+                 -5, 0, 25, 25, 25, 30, 25, 10,
+                 -20, 0, 20, 25, 25, 25, 10, 5,
+                 -10, 0, 10, 20, 25, 15, 5, -10,
+                 -30, -10, 5, 15, 15, 5, -5, -20,
+                 -50, -30, -20, -10, -30, -15, -25, -45]}
+
+    phase_dict = {chess.PAWN : 0,
+    chess.KNIGHT : 1,
+    chess.BISHOP : 1,
+    chess.ROOK : 2,
+    chess.QUEEN : 4}
+    TotalPhase = phase_dict[chess.PAWN]*16 + phase_dict[chess.KNIGHT]*4 + phase_dict[chess.BISHOP]*4 + phase_dict[chess.ROOK]*4 + phase_dict[chess.QUEEN]*2
+
+    phase = TotalPhase
+    opening = 0
+    endgame = 0
+    
+    for piece_type in range(1,6):
+        phase -= phase_dict[piece_type]*len(board.pieces(piece_type,chess.BLACK))
+        for square in board.pieces(piece_type,chess.BLACK):
+            opening -= piece_square_value_opening[piece_type][square]
+            endgame -= piece_square_value_endgame[piece_type][square]
+        phase -= phase_dict[piece_type]*len(board.pieces(piece_type,chess.WHITE))
+        for square in board.pieces(piece_type,chess.WHITE):
+            opening += piece_square_value_opening[piece_type][(7-square//8)*8 + square%8]
+            endgame += piece_square_value_endgame[piece_type][(7-square//8)*8 + square%8]
+
+    phase = (phase * 256 + (TotalPhase / 2)) / TotalPhase
+    
+    #print(phase, opening, endgame)
+    
+    piece_eval = ((opening * (256 - phase)) + (endgame * phase)) / 256
+    
+    return piece_eval
 
 def pawn_eval(board):
                 
@@ -165,7 +234,7 @@ def pawn_eval(board):
 
     pawn_eval = 50*len(passed_pawns) - 25*len(doubled_pawns) - 5*len(backwards_pawns) - 25*len(isolated_pawns)
     
-    return pawn_eval, doubled_pawns, passed_pawns, isolated_pawns, backwards_pawns#, semi_open_files_white, semi_open_files_black, open_files 
+    return pawn_eval #, doubled_pawns, passed_pawns, isolated_pawns, backwards_pawns, semi_open_files_white, semi_open_files_black, open_files 
 
 
 def mobility_eval(board):
@@ -173,56 +242,32 @@ def mobility_eval(board):
     if board.turn == chess.WHITE:
         temp_board = board.copy()
         temp_board.push(chess.Move.null())
-        return 10*(board.legal_moves.count()-temp_board.legal_moves.count())
+        return 5*(board.legal_moves.count()-temp_board.legal_moves.count())
     
     if board.turn == chess.BLACK:
         temp_board = board.copy()
         temp_board.push(chess.Move.null())
-        return -10*(board.legal_moves.count()-temp_board.legal_moves.count())
+        return -5*(board.legal_moves.count()-temp_board.legal_moves.count())
 
 
 def evaluate(board):
         
-    #semi_open_files_white, semi_open_files_black, open_files
-        
-    return material_eval(board) + pawn_eval(board)[0] + mobility_eval(board)
-
-
-#def search(board, depth):
-#    
-#    if depth == 0:
-#        return evaluate(board)
-#    
-#    if board.is_checkmate():
-#        return math.inf
-#    
-#    if board.is_stalemate():
-#        return 0
-#    
-#    legal_moves = list(board.legal_moves)
-#    
-#    best_eval = -math.inf
-#    
-#    for move in legal_moves:
-#        board.push(move)
-#        evaluation = -search(board, depth - 1)
-#        best_eval = max(best_eval, evaluation)
-#        board.pop()
+    return material_eval(board) + piece_eval(board) + mobility_eval(board)# + pawn_eval(board)
 
 def order_moves(board):
 
     piece_values = {
         "K": 20000,
-        "Q": 900,
-        "R": 500,
-        "B": 300,
-        "N": 300,
+        "Q": 950,
+        "R": 563,
+        "B": 333,
+        "N": 305,
         "P": 100,
         "k": -20000,
-        "q": -900,
-        "r": -500,
-        "b": -300,
-        "n": -300,
+        "q": -950,
+        "r": -563,
+        "b": -333,
+        "n": -305,
         "p": -100
     }
     
@@ -267,7 +312,6 @@ def search_alphabeta_pruning(board, depth, ply_from_root=0, alpha=-math.inf, bet
     if board.is_stalemate():
         return 0
 
-    #for move in board.legal_moves:
     for move in order_moves(board):
         board.push(move)
         evaluation = -search_alphabeta_pruning(board, depth - 1, ply_from_root + 1, -beta, -alpha)
@@ -278,7 +322,6 @@ def search_alphabeta_pruning(board, depth, ply_from_root=0, alpha=-math.inf, bet
             #principal_variation = list(board.move_stack)[-ply_from_root:]
             if ply_from_root == 0:
                 best_move = move
-                #print(ply_from_root, move, evaluation,principal_variation)
             
             alpha = evaluation
     
@@ -289,18 +332,7 @@ def engine(board, depth):
     
     global best_move
     
-    with chess.polyglot.open_reader("/data/data/chess-engine/assets/openings/Human.bin") as reader:
-        
-#        print(board)
-#        
-#        print(reader)
-#        
-#        print(reader.get(board))
-#        
-#        for move in reader.find_all(chess.Board()):
-#            print(move)
-#
-#        print(reader.choice(board).move)
+    with chess.polyglot.open_reader("/data/data/chess-engine/assets/openings/baron30.bin") as reader:
 
         try: 
             return reader.choice(board).move
@@ -308,7 +340,5 @@ def engine(board, depth):
             best_move = chess.Move.null()
 
             evaluation = search_alphabeta_pruning(board, depth)
-
-            print(best_move)
 
             return best_move
