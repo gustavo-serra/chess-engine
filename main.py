@@ -102,8 +102,8 @@ def init():
     global scrn, status, WHITE, GREY, YELLOW, BLUE, BLACK, pieces, board, agent, agent_color, index_moves, background, depth
     
     # initialise display
-    X = 800
-    Y = 800
+    X = 720
+    Y = 720
     scrn = pygame.display.set_mode((X, Y))
     pygame.init()
 
