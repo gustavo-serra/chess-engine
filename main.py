@@ -143,7 +143,7 @@ def init():
     board = chess.Board()
     agent = engine.engine
     agent_color = 0
-    depth = 5
+    depth = 4
     
     #used later
     index_moves = []
